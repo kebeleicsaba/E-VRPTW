@@ -1,4 +1,3 @@
-import time
 from typing import Optional
 
 from .customer_select import select_next_customer
@@ -9,7 +8,6 @@ def construct_greedy_solution(instance: EVRPTWInstance) -> Solution:
     The heuristic run until all customers are served or no feasible solution can be found.
     Each iteration constructs a route. 
     """
-    start_time = time.time()
     routes = []
     unserved_customers = set(instance.customer_ids)
 
@@ -41,17 +39,17 @@ def construct_greedy_solution(instance: EVRPTWInstance) -> Solution:
 
         if len(unserved_customers) == initial_unserved_count: 
             print("No feasible solution could be found for remaining customers.")
-            return None, time.time() - start_time # Infeasible solution, we cannot serve all customers
+            return None # Infeasible solution, we cannot serve all customers
 
         if not finish_route(route_status, instance):
             print("Could not finish route properly.")
-            return None, time.time() - start_time # Infeasible solution, we cannot return to depot
+            return None # Infeasible solution, we cannot return to depot
 
         routes.append(route_status)
 
     solution = Solution(routes=[r.route for r in routes])
     solution.compute_total_distance(instance)
-    return solution, time.time() - start_time
+    return solution
 
 def initialize_route(instance: EVRPTWInstance) -> RouteStatus:
     """Initializes a new route status for the given instance."""
