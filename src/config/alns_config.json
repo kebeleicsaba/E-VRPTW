@@ -1,0 +1,10 @@
+{
+    "num_iterations": 1000,
+    "simulated_annealing": {
+      "start_temperature": 1000,
+      "end_temperature": 1,
+      "step": 0.001,
+      "method": "exponential"
+    }
+  }
+  
