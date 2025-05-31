@@ -1,6 +1,7 @@
 from typing import Optional
 
 from model import EVRPTWInstance, Solution
+from common.utils import compute_route_distance
 
 def relocate_descent_without_station_change(instance: EVRPTWInstance, solution: Solution) -> tuple[bool, Solution]:
     """Tries to improve the solution using relocate moves, without adding stations."""
@@ -178,12 +179,3 @@ def find_best_station_for_customer_insert(instance: EVRPTWInstance, route: list[
             best_route = candidate
 
     return best_route
-
-def compute_route_distance(instance: EVRPTWInstance, route: list[int]) -> float:
-    """Returns the total distance of a single route."""
-    total_distance = 0.0
-    for i in range(len(route) - 1):
-        u = route[i]
-        v = route[i + 1]
-        total_distance += instance.distance(u, v)
-    return total_distance
