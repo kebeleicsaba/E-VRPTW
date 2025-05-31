@@ -1,7 +1,7 @@
 from pathlib import Path
 import time
 
-from data import read_evrptw_instance
+from data import read_evrptw_instance, save_solution_to_file
 from construction import construct_greedy_solution
 from local_search import local_search
 
@@ -28,7 +28,7 @@ def run_heuristic_on_all_instances(instance_folder: str, solution_folder: str) -
         local_time = time.time() - start_local
         local_distance = improved_solution.total_distance
 
-        improved_solution.save_solution(instance, solution_folder, f"{instance_name}.sol")
+        save_solution_to_file(improved_solution, instance, solution_folder, f"{instance_name}.sol")
 
         # --- Output summary ---
         print(f"[RESULT] Construct   → Distance: {construct_distance:.2f} | Time: {construct_time:.2f} sec")

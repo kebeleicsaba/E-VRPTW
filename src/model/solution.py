@@ -18,20 +18,6 @@ class Solution:
     def copy(self) -> 'Solution':
         return Solution(routes=[list(route) for route in self.routes])
     
-    def save_solution(self, instance: EVRPTWInstance, output_dir: str, filename: str):
-        route_lines = []
-        for route in self.routes:
-            node_names = [instance.nodes[i].string_id for i in route]
-            route_lines.append(", ".join(node_names))
-
-        Path(output_dir).mkdir(parents=True, exist_ok=True)
-        file_path = Path(output_dir) / filename
-
-        with open(file_path, "w") as f:
-            f.write(f"{self.total_distance}\n")
-            for route in route_lines:
-                f.write(route + "\n")
-
     def __str__(self) -> str:
         return f"Solution:\nRoutes={self.routes}\nTotal distance={self.total_distance}"
     
