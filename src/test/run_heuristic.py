@@ -42,5 +42,5 @@ def run_heuristic_on_all_instances(instance_folder: str, solution_folder: str, m
 
         save_solution_to_file(final_solution, instance, solution_folder, f"{instance_name}.sol")
 
-        print(f"[RESULT] Construct → Distance: {construct_distance:.2f} | Time: {construct_time:.2f} sec")
-        print(f"[RESULT] Final     → Distance: {final_distance:.2f} | Time: {final_time:.2f} sec")
+        print(f"[RESULT] Construct → Distance: {construct_distance} | Time: {construct_time} sec")
+        print(f"[RESULT] Final     → Distance: {final_distance} | Time: {final_time} sec")
