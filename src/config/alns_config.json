@@ -1,6 +1,6 @@
 {
   "seed": 1234,
-  "num_iterations": 2500,
+  "num_iterations": 5000,
   "simulated_annealing": {
     "start_temperature": 1000,
     "end_temperature": 1,
