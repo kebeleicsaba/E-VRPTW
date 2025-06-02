@@ -29,7 +29,6 @@ def random_customer_removal(state: ALNSState, rnd, **kwargs) -> ALNSState:
     destroyed.routes = [r for r in destroyed.routes if r]
     return destroyed
 
-
 def nearest_customers_removal(state: ALNSState, rnd, **kwargs) -> ALNSState:
     """Removes a randomly selected customer and its nearest neighbors based on distance."""
     xi = kwargs.get("xi", 0.2)
@@ -50,7 +49,7 @@ def nearest_customers_removal(state: ALNSState, rnd, **kwargs) -> ALNSState:
 
     for node in to_remove:
         removed = False
-        for route_idx, route in enumerate(destroyed.routes):
+        for _, route in enumerate(destroyed.routes):
             if node in route:
                 route.remove(node)
                 destroyed.unassigned.append(node)
@@ -73,7 +72,7 @@ def worst_customer_removal(state: ALNSState, rnd, **kwargs) -> ALNSState:
     for route_idx, route in enumerate(destroyed.routes):
         for i in range(1, len(route) - 1):
             customer = route[i]
-            if customer not in instance.customer_ids:
+            if not instance.is_customer(customer):
                 continue
 
             gain = calculate_removal_gain(instance, route, i)
@@ -231,7 +230,7 @@ def check_energy_feasibility(instance: EVRPTWInstance, route: list[int]) -> bool
         if soc - energy_used < 0:
             return False
 
-        if node in instance.station_ids:
+        if instance.is_station(node):
             soc = instance.vehicle_energy_capacity
         else:
             soc -= energy_used

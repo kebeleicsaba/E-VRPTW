@@ -37,8 +37,7 @@ class Solution:
             )
 
             for node in route[1:]:
-                node_id = instance.nodes[node].string_id
-                demand = instance.demand(node) if node in instance.customer_ids else 0
+                demand = instance.demand(node) if instance.is_customer(node) else 0
                 distance = instance.distance(last_node, node)
                 travel_time = instance.travel_time(last_node, node)
                 energy_used = instance.energy_consumption(last_node, node)
@@ -47,13 +46,13 @@ class Solution:
                 soc_on_arrival = soc - energy_used
                 energy_feasible = soc_on_arrival > 0.0
 
-                type_str = "Station" if node in instance.station_ids else "Customer" if node in instance.customer_ids else "Depot"
+                type_str = "Station" if instance.is_station(node) else "Customer" if instance.is_customer(node) else "Depot"
 
                 warning = ""
                 if not energy_feasible:
                     warning = f" ⚠ ENERGY VIOLATION (SOC={soc_on_arrival:.3f})"
 
-                if node in instance.customer_ids:
+                if instance.is_customer(node):
                     ready = instance.ready(node)
                     due = instance.due(node)
                     service_time = instance.service_time(node)
@@ -71,7 +70,7 @@ class Solution:
                         tw_status = "⚠ Early"
 
                     tw_info = f" | TW: [{ready}, {due}], Arrival: {arrival_time:.1f}, Start: {start_service:.1f}{' ' + tw_status if tw_status else ''}"
-                elif node in instance.station_ids:
+                elif instance.is_station(node):
                     recharge_amount = instance.vehicle_energy_capacity - max(0.0, soc_on_arrival)
                     recharge_time = instance.time_for_recharging_energy(recharge_amount)
                     time = arrival_time + recharge_time

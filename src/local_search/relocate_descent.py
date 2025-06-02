@@ -10,7 +10,7 @@ def relocate_descent_without_station_change(instance: EVRPTWInstance, solution: 
     for i, route_i in enumerate(solution.routes):
         for j in range(len(route_i)):
             customer = route_i[j]
-            if customer not in instance.customer_ids:
+            if not instance.is_customer(customer):
                 continue # Skip if the node is depot or station
 
             for k, route_k in enumerate(solution.routes):
@@ -45,7 +45,7 @@ def relocate_descent(instance: EVRPTWInstance, solution: Solution) -> tuple[bool
     for i, route_i in enumerate(solution.routes):
         for j in range(len(route_i)):
             customer = route_i[j]
-            if customer not in instance.customer_ids:
+            if not instance.is_customer(customer):
                 continue
 
             for k, route_k in enumerate(solution.routes):

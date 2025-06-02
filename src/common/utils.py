@@ -25,7 +25,7 @@ def check_route_feasibility_constraints(instance: EVRPTWInstance, route: list[in
     energy_feasible = True
 
     for node in route[1:]:
-        demand = instance.demand(node) if node in instance.customer_ids else 0
+        demand = instance.demand(node) if instance.is_customer(node) else 0
         travel_time = instance.travel_time(last_node, node)
         energy_used = instance.energy_consumption(last_node, node)
         arrival_time = time + travel_time
@@ -33,7 +33,7 @@ def check_route_feasibility_constraints(instance: EVRPTWInstance, route: list[in
         if soc - energy_used < 0:
             energy_feasible = False
 
-        if node in instance.customer_ids:
+        if instance.is_customer(node):
             ready = instance.ready(node)
             due = instance.due(node)
             service_time = instance.service_time(node)
@@ -50,11 +50,11 @@ def check_route_feasibility_constraints(instance: EVRPTWInstance, route: list[in
             capacity -= demand
             soc -= energy_used
 
-        elif node in instance.station_ids:
+        elif instance.is_station(node):
             recharge_amount = instance.vehicle_energy_capacity - max(0.0, soc - energy_used)
             recharge_time = instance.time_for_recharging_energy(recharge_amount)
             time = arrival_time + recharge_time
-            soc = instance.vehicle_energy_capacity  # full recharge
+            soc = instance.vehicle_energy_capacity
 
         else:  # depot
             time = arrival_time
