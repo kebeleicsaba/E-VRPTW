@@ -1,19 +1,21 @@
 from pathlib import Path
 import json
 import numpy.random as rnd
+#import matplotlib.pyplot as plt
 
 from alns import ALNS
 from alns.accept import SimulatedAnnealing
 from alns.select import SegmentedRouletteWheel
 from alns.stop import MaxIterations
 
+from data.log_saver import save_log
 from model.instance import EVRPTWInstance
 from model.solution import Solution
 from .alns_state import ALNSState
 from .destroy_operators import random_customer_removal, nearest_customers_removal, worst_customer_removal, worst_station_removal
 from .repair_operators import greedy_repair, regret_repair
 
-def run_alns(instance: EVRPTWInstance, initial_solution: Solution) -> Solution:
+def run_alns(instance: EVRPTWInstance, initial_solution: Solution, log_path: str = None) -> Solution:
     """Runs the Adaptive Large Neighborhood Search algorithm """
     config_path = Path(__file__).parent.parent / "config" / "alns_config.json"
     with open(config_path) as f:
@@ -61,4 +63,41 @@ def run_alns(instance: EVRPTWInstance, initial_solution: Solution) -> Solution:
     best_state: ALNSState = result.best_state
     best_solution = Solution(routes=best_state.routes)
     best_solution.compute_total_distance(instance)
+
+    #result.plot_operator_counts()
+    #plt.gcf().set_size_inches(14, 8)
+    #plt.tight_layout()
+
+    #plt.savefig("operator_counts_large.png", dpi=200)
+
+    stats = result.statistics
+
+    destroy_operator_names = list(stats.destroy_operator_counts.keys())
+    destroy_operator_counts = [stats.destroy_operator_counts[name] for name in destroy_operator_names]
+    destroy_operator_total_counts = [sum(stats.destroy_operator_counts[name]) for name in destroy_operator_names]
+
+    repair_operator_names = list(stats.repair_operator_counts.keys())
+    repair_operator_counts = [stats.repair_operator_counts[name] for name in repair_operator_names]
+    repair_operator_total_counts = [sum(stats.repair_operator_counts[name]) for name in repair_operator_names]
+
+    if log_path:
+        log_data = {
+            "objectives": list(stats.objectives),
+            "destroy_operator_names": destroy_operator_names,
+            "destroy_operator_outcome_counts": destroy_operator_counts,
+            "destroy_operator_total_counts": destroy_operator_total_counts,
+            "repair_operator_names": repair_operator_names,
+            "repair_operator_outcome_counts": repair_operator_counts,
+            "repair_operator_total_counts": repair_operator_total_counts,
+            "operator_outcome_labels": ["best", "better", "accepted", "rejected"],
+            "runtimes": list(stats.runtimes),
+            "total_runtime": stats.total_runtime,
+            "num_iterations": num_iterations,
+            "best_solution": {
+                "total_distance": best_solution.total_distance,
+                "routes": best_solution.routes
+            }
+        }
+        save_log(log_path, log_data)
+
     return best_solution

@@ -1,9 +1,12 @@
 from typing import Optional
+import time
+import json
 
-from .customer_select import select_next_customer
+from data.log_saver import save_log
 from model import EVRPTWInstance, Solution, RouteStatus
+from .customer_select import select_next_customer
 
-def construct_greedy_solution(instance: EVRPTWInstance) -> Solution:
+def construct_greedy_solution(instance: EVRPTWInstance, log_path: str = None) -> Solution:
     """Constructs a greedy solution for the EVRPTW problem.
     The heuristic run until all customers are served or no feasible solution can be found.
     Each iteration constructs a route. 
@@ -11,6 +14,7 @@ def construct_greedy_solution(instance: EVRPTWInstance) -> Solution:
     routes = []
     unserved_customers = set(instance.customer_ids)
 
+    t_start = time.time()
     while unserved_customers:
         route_status = initialize_route(instance)
         initial_unserved_count = len(unserved_customers)
@@ -49,6 +53,19 @@ def construct_greedy_solution(instance: EVRPTWInstance) -> Solution:
 
     solution = Solution(routes=[r.route for r in routes])
     solution.compute_total_distance(instance)
+
+    elapsed_time = time.time() - t_start
+
+    if log_path:
+        log_data = {
+            "best_solution": {
+                "routes": solution.routes,
+                "total_distance": solution.total_distance
+            },
+            "elapsed_time": elapsed_time,
+        }
+        save_log(log_path, log_data)
+
     return solution
 
 def initialize_route(instance: EVRPTWInstance) -> RouteStatus:
